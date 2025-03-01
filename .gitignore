@@ -1,5 +1,6 @@
 # Special Folders
 pkgs/
+result/
 
 # Compiled Lua sources
 luac.out
