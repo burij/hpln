@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HPLN</title>
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+    <style>
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+        padding-left: 10vw; padding-right: 8vw; padding-top: 20vh;}
+      h1, h2, h3, h4, h5, h6 {font-family: Helvetica, Arial, sans-serif;}
+      button {margin-right: 1vh; border-radius: 200px;}
+      article {margin-right: 5vw;}
+      .spacer {padding-bottom: 40vh;}
+      .logo {text-decoration: none;}
+    </style></head>
+
+  <body><main class="container">
+    <small>Proove of concept</small>
+    <a class="logo" href="javascript:void(0);" onclick="location.reload();">
+      <h1>Extremly simple HPLN web stack</h1></a>
+
+    <b id="content">
+      This web app is build with htmx, pico css, lua in nginx and nix.</b>
+
+    <div><br>
+      <button hx-get="/demo" hx-target="#content">
+        Execute Lua script</button>
+
+      <a href="#" hx-get="/how" hx-target="#how"
+        class="text-sm font-semibold text-gray-900">
+        How and why <span aria-hidden="true">&rarr;</span></a>
+
+      <br><br><div id="how"></div>
+
+    <small><div class="spacer"></div>
+      This website isn’t commercial, and it doesn’t use cookies or analytic
+      tools. <a href="#" hx-get="/privacy" hx-target="#privacy">
+        Click here for more information about the privacy policy.</a></small>
+    <br><br><div id="privacy"></div>
+
+    </main></body>
+</html>
+
