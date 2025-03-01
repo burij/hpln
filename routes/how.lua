@@ -8,7 +8,8 @@ local content_block = md([[
 - [HTMX](https://htmx.org/) is enough interactivity for the most web applications
 
 ### Get started
-- Clone the repository and enter the project directory
+- Clone the [repository](https://github.com/burij/hpln/) and enter the project directory
+<code>git clone https://github.com/burij/hpln.git && cd hpln</code>
 - Power up your development shell:
 <code>nix-shell</code>
 

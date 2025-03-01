@@ -18,7 +18,8 @@ pkgs.mkShell {
         luarocks install lua-light-wings --tree ./pkgs
         luarocks install md --tree ./pkgs
         alias up='echo "Starting server. Check out http://localhost:8111" && \
-            nginx -p . -c nginx.conf -e logs/error.log'
+            sudo systemctl stop $APP && sleep 2 && \
+            nginx -p . -c nginx.conf -e /tmp/$APP/error.log'
         alias kill='kill "$(cat /tmp/$APP/nginx.pid 2>/dev/null)" \
             2>/dev/null && echo "Server stopped." || \
             echo "Server was not running."'
