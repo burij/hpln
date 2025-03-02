@@ -24,7 +24,5 @@ pkgs.mkShell {
             echo "Server was not running."'
         alias debug='lua debug.lua'
         alias reload='kill && sleep 2 && up'
-        alias deploy='sudo nixos-rebuild switch && \
-            kill && sleep 2 && systemctl restart $APP'
 	'';
 }
