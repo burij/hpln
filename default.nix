@@ -4,7 +4,12 @@ pkgs.stdenv.mkDerivation {
   pname = "hpln";
   version = "init";
 
-  src = ./.;  # The source directory with your app files
+  src = pkgs.fetchFromGitHub {
+    owner = "burij";
+    repo = "hpln";
+    rev = "0.1.1";
+    sha256 = "sha256-yIIUXbKmdVXuyYOnQEFz7X7T7w28z8ZYYMJBSuHhCpE=";
+  };
 
   llwCoreLua = pkgs.fetchurl {
     url = "https://raw.githubusercontent.com/burij/lua-light-wings/refs/tags/v.0.1.0/modules/llw-core.lua";
@@ -23,6 +28,8 @@ pkgs.stdenv.mkDerivation {
 
 
   installPhase = ''
+  echo "Listing files in source directory"
+  ls -l $src  # Check what files are in the fetched source directory
     mkdir -p $out/bin
     cp -r $src/* $out/
     cp $llwCoreLua $out/llw-core.lua
