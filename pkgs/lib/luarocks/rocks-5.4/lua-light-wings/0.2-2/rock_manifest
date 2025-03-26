@@ -1,0 +1,12 @@
+rock_manifest = {
+   doc = {
+      LICENSE = "0a441b12ea92856003d929206a7d26c2",
+      ["README.md"] = "ae944b6a1747321db16a2fe194978a01"
+   },
+   lua = {
+      ["lua-light-wings-extra.lua"] = "1fad4264448f1d2e15aa0d5d29822bd0",
+      ["lua-light-wings.lua"] = "d887a5bf0e1655e97336bac08bb964d6",
+      ["need.lua"] = "39d6d9e1b43b8e4dd99529c9829a7e54"
+   },
+   ["lua-light-wings-0.2-2.rockspec"] = "c70c4d1e48b712d71f1349dc5124f35a"
+}
