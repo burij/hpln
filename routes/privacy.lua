@@ -1,7 +1,6 @@
-local need  = require "need"
-local core = require("lua-light-wings")
+local core = require "lua-light-wings"
 core.globalize(core)
-local html_utils = need "html_utils"
+local html_utils = require "html_utils"
 
 local content_block = [[
 <h1 id="privacy-policy">Privacy Policy</h1>

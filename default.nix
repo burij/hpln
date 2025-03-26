@@ -15,10 +15,10 @@ let
   shell = pkgs.mkShell {
     buildInputs = dependencies;
     shellHook = ''
+      echo "DON'T PUSH THAT!!!"
       APP="hpln"
       mkdir "/tmp/$APP"
         touch "/tmp/$APP/error.log"
-        luarocks install md --local
         alias up='echo "Starting server. Check out http://localhost:8111" && \
             nginx -p . -c nginx.conf -e /tmp/$APP/error.log'
         alias kill='kill "$(cat /tmp/$APP/nginx.pid 2>/dev/null)" \
@@ -28,12 +28,6 @@ let
         alias reload='kill && sleep 2 && up'
         alias deploy='cp default.nix \
             /data/$USER/System/hosts/box/webapps/hpln.nix'
-
-      cp ${pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/burij/"
-          +"lua-light-wings/refs/heads/main/modules/need.lua";
-        sha256 = "sha256-w6ie/GiCiMywXgVmDg6WtUsTFa810DTGo1jAHV5pi/A=";
-      }} ./need.lua
 
       cp ${pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/burij/"
