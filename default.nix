@@ -15,11 +15,10 @@ let
   shell = pkgs.mkShell {
     buildInputs = dependencies;
     shellHook = ''
-      	APP="hpln"
-	    mkdir "/tmp/$APP"
+      APP="hpln"
+      mkdir "/tmp/$APP"
         touch "/tmp/$APP/error.log"
-        luarocks install lua-light-wings --tree ./modules
-        luarocks install md --tree ./modules
+        luarocks install md --local
         alias up='echo "Starting server. Check out http://localhost:8111" && \
             nginx -p . -c nginx.conf -e /tmp/$APP/error.log'
         alias kill='kill "$(cat /tmp/$APP/nginx.pid 2>/dev/null)" \

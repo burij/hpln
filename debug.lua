@@ -1,4 +1,6 @@
-dofile("env.lua")
+local need = require "need"
+local core = need "lua-light-wings"
+core.globalize(core)
 msg("lua documention: https://lua-docs.vercel.app")
 ngx = {}
 ngx.say = msg

@@ -1,5 +1,8 @@
-local html_utils = require("modules.html_utils")
-local md = require("md")
+local need  = require "need"
+local core = require("lua-light-wings")
+core.globalize(core)
+local html_utils = need "html_utils"
+local md = need "md"
 
 local content_block = md([[
 
