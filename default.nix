@@ -40,6 +40,8 @@ let
   };
 
   package = pkgs.stdenv.mkDerivation {
+    pname = "hpln";
+    version = "init";
     src = pkgs.fetchFromGitHub {
       owner = "burij";
       repo = "hpln";
@@ -55,42 +57,77 @@ let
     buildInputs = dependencies;
     installPhase = ''
 
-      # echo "Listing files in source directory"
-      # ls -l $src  # Check what files are in the fetched source directory
-      # mkdir -p $out/bin
-      # cp -r $src/* $out/
-      # cp $llwCoreLua $out/llw-core.lua
       # cp $mdLua $out/md.lua
-      # ln -s ${pkgs.openresty}/bin/openresty $out/bin/appserver
-      # ln -s $out/nginx.conf $out/bin/ngnix.conf
       # install -m 755 ./wrappers/server.sh $out/bin/hpln
 
       echo "Listing files in source directory"
       ls -l $src  # Check what files are in the fetched source directory
       mkdir -p $out/bin
+      ln -s ${pkgs.openresty}/bin/openresty $out/bin/appserver
+      ln -s $out/nginx.conf $out/bin/ngnix.conf
       cp -r $src/* $out/
-      cp $llwCoreLua $out/llw-core.lua # TODO: Check if can be upgraded to newer version
 
       # Create the lua binary wrapper with proper environment
-      cat > $out/bin/nx-rebuild <<EOF
+      cat > $out/bin/hpln <<EOF
       #!${pkgs.stdenv.shell}
       export LUA_PATH="\
       # ${pkgs.lua54Packages.inspect}/share/lua/5.4/?.lua;\
       # ${pkgs.lua54Packages.inspect}/share/lua/5.4/?/init.lua;\
       # ${pkgs.lua54Packages.luafilesystem}/share/lua/5.4/?.lua;\
       # ${pkgs.lua54Packages.luafilesystem}/share/lua/5.4/?/init.lua;\
-      $out/?.lua;$out/?/init.lua"
+      $out/?.lua;$out/modules/?.lua;$out/?/init.lua"
 
       export LUA_CPATH="\
       # ${pkgs.lua54Packages.inspect}/lib/lua/5.4/?.so;\
       # ${pkgs.lua54Packages.luafilesystem}/lib/lua/5.4/?.so;\
       $out/?.so"
 
-      exec ${pkgs.lua5_4}/bin/lua "$out/app.lua"
+      APP="hpln"
+      # Get the absolute path of the script itself
+      SCRIPT_PATH="$(realpath "$0")"
+      # Get the bin directory containing the script
+      BIN_DIR="$(dirname "$SCRIPT_PATH")"
+      # Get the app directory (parent of bin)
+      APP_DIR="$(dirname "$BIN_DIR")"
+
+      PID_FILE="/tmp/$APP/nginx.pid"
+      ERROR_LOG="/tmp/$APP/error.log"
+
+      # Ensure required directories exist
+      mkdir -p "/tmp/$APP"
+      touch "$ERROR_LOG"
+
+      # Change to the app directory so Lua can find its modules
+      cd "$APP_DIR" || exit 1
+
+      # Stop any existing server
+      if [ -f "$PID_FILE" ]; then
+      PID=$(cat "$PID_FILE" 2>/dev/null)
+      if [ -n "$PID" ]; then
+      kill "$PID" 2>/dev/null && echo "Server (PID: $PID) stopped." \
+      || echo "Server was not running."
+      else
+      echo "PID file is empty."
+      fi
+      else
+      echo "No PID file found."
+      fi
+
+      sleep 2
+
+      echo "Server starting. Check http://localhost:8111/"
+
+      # Start the server with absolute paths
+      exec "$APP_DIR/bin/appserver" \
+      -p "$APP_DIR" \
+      -c "$APP_DIR/nginx.conf" \
+      -e "$ERROR_LOG" \
+      "$@"
+
       EOF
 
       chmod +x $out/bin/hpln
     '';
   };
 in
-shell
+package
