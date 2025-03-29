@@ -17,16 +17,23 @@ let
     shellHook = ''
       APP="hpln"
       mkdir "/tmp/$APP"
-        touch "/tmp/$APP/error.log"
-        alias up='echo "Starting server. Check out http://localhost:8111" && \
-            nginx -p . -c nginx.conf -e /tmp/$APP/error.log'
-        alias kill='kill "$(cat /tmp/$APP/nginx.pid 2>/dev/null)" \
-            2>/dev/null && echo "Server stopped." || \
-            echo "Server was not running."'
-        alias debug='lua debug.lua'
-        alias reload='kill && sleep 2 && up'
-        alias deploy='cp default.nix \
-            /data/$USER/System/hosts/box/webapps/hpln.nix'
+      touch "/tmp/$APP/error.log"
+      alias up='echo "Starting server. Check out http://localhost:8111" && \
+        nginx -p . -c nginx.conf -e /tmp/$APP/error.log'
+      alias kill='kill "$(cat /tmp/$APP/nginx.pid 2>/dev/null)" \
+        2>/dev/null && echo "Server stopped." || \
+        echo "Server was not running."'
+      alias debug='lua debug.lua'
+      alias reload='kill && sleep 2 && up'
+      alias deploy='cp default.nix \
+          /data/$USER/System/hosts/box/webapps/hpln.nix'
+
+      cp ${pkgs.fetchurl {
+        url = "https://raw.githubusercontent.com/burij/"
+          +"lua-light-wings/refs/heads/main/modules/need.lua";
+        sha256 = "sha256-w6ie/GiCiMywXgVmDg6WtUsTFa810DTGo1jAHV5pi/A=";
+      }} ./need.lua
+
 
       cp ${pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/burij/"
@@ -56,10 +63,6 @@ let
 
     buildInputs = dependencies;
     installPhase = ''
-
-      # cp $mdLua $out/md.lua
-      # install -m 755 ./wrappers/server.sh $out/bin/hpln
-
       echo "Listing files in source directory"
       ls -l $src  # Check what files are in the fetched source directory
       mkdir -p $out/bin
@@ -71,7 +74,6 @@ let
       # Create the lua binary wrapper with proper environment
       cat > $out/bin/hpln <<EOF
       #!${pkgs.stdenv.shell}
-
       APP="hpln"
       # Get the absolute path of the script itself
       SCRIPT_PATH="\$(realpath "\$0")"
@@ -79,17 +81,13 @@ let
       BIN_DIR="\$(dirname "\$SCRIPT_PATH")"
       # Get the app directory (parent of bin)
       APP_DIR="\$(dirname "\$BIN_DIR")"
-
       PID_FILE="/tmp/\$APP/nginx.pid"
       ERROR_LOG="/tmp/\$APP/error.log"
-
       # Ensure required directories exist
       mkdir -p "/tmp/\$APP"
       touch "\$ERROR_LOG"
-
       # Change to the app directory so Lua can find its modules
       cd "\$APP_DIR" || exit 1
-
       # Stop any existing server
       if [ -f "\$PID_FILE" ]; then
           PID=\$(cat "\$PID_FILE" 2>/dev/null)
@@ -102,11 +100,8 @@ let
       else
           echo "No PID file found."
       fi
-
       sleep 2
-
       echo "Server starting. Check http://localhost:8111/"
-
       # Start the server with absolute paths
       exec "\$APP_DIR/bin/appserver" \\
           -p "\$APP_DIR" \\
@@ -119,8 +114,5 @@ let
     '';
   };
 in
-{
-  package = package;
-  shell = shell;
-}
 
+package
