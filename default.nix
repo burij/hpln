@@ -70,47 +70,36 @@ let
       # Create the lua binary wrapper with proper environment
       cat > $out/bin/hpln <<EOF
       #!${pkgs.stdenv.shell}
-      export LUA_PATH="\
-      # ${pkgs.lua54Packages.inspect}/share/lua/5.4/?.lua;\
-      # ${pkgs.lua54Packages.inspect}/share/lua/5.4/?/init.lua;\
-      # ${pkgs.lua54Packages.luafilesystem}/share/lua/5.4/?.lua;\
-      # ${pkgs.lua54Packages.luafilesystem}/share/lua/5.4/?/init.lua;\
-      $out/?.lua;$out/modules/?.lua;$out/?/init.lua"
-
-      export LUA_CPATH="\
-      # ${pkgs.lua54Packages.inspect}/lib/lua/5.4/?.so;\
-      # ${pkgs.lua54Packages.luafilesystem}/lib/lua/5.4/?.so;\
-      $out/?.so"
 
       APP="hpln"
       # Get the absolute path of the script itself
-      SCRIPT_PATH=$out
+      SCRIPT_PATH="\$(realpath "\$0")"
       # Get the bin directory containing the script
-      BIN_DIR=$out/bin
+      BIN_DIR="\$(dirname "\$SCRIPT_PATH")"
       # Get the app directory (parent of bin)
-      APP_DIR=$out/
+      APP_DIR="\$(dirname "\$BIN_DIR")"
 
-      PID_FILE="/tmp/hpln/nginx.pid"
-      ERROR_LOG="/tmp/hpln/error.log"
+      PID_FILE="/tmp/\$APP/nginx.pid"
+      ERROR_LOG="/tmp/\$APP/error.log"
 
       # Ensure required directories exist
-      mkdir -p "/tmp/hpln"
-      touch /tmp/hpln/error.log
+      mkdir -p "/tmp/\$APP"
+      touch "\$ERROR_LOG"
 
       # Change to the app directory so Lua can find its modules
-      cd "$APP_DIR" || exit 1
+      cd "\$APP_DIR" || exit 1
 
       # Stop any existing server
-      if [ -f "/tmp/hpln/nginx.pid" ]; then
-      PID=$(cat "/tmp/hpln/nginx.pid" 2>/dev/null)
-      if [ -n "$PID" ]; then
-      kill "$PID" 2>/dev/null && echo "Server (PID: $PID) stopped." \
-      || echo "Server was not running."
+      if [ -f "\$PID_FILE" ]; then
+          PID=\$(cat "\$PID_FILE" 2>/dev/null)
+          if [ -n "\$PID" ]; then
+              kill "\$PID" 2>/dev/null && echo "Server (PID: \$PID) stopped." \
+              || echo "Server was not running."
+          else
+              echo "PID file is empty."
+          fi
       else
-      echo "PID file is empty."
-      fi
-      else
-      echo "No PID file found."
+          echo "No PID file found."
       fi
 
       sleep 2
@@ -118,12 +107,11 @@ let
       echo "Server starting. Check http://localhost:8111/"
 
       # Start the server with absolute paths
-      exec "$APP_DIR/bin/appserver" \
-      -p "$APP_DIR" \
-      -c "$APP_DIR/nginx.conf" \
-      -e "$ERROR_LOG" \
-      "$@"
-
+      exec "\$APP_DIR/bin/appserver" \\
+          -p "\$APP_DIR" \\
+          -c "\$APP_DIR/nginx.conf" \\
+          -e "\$ERROR_LOG" \\
+          "\$@"
       EOF
 
       chmod +x $out/bin/hpln
