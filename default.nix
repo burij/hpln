@@ -15,7 +15,6 @@ let
   shell = pkgs.mkShell {
     buildInputs = dependencies;
     shellHook = ''
-      echo "DON'T PUSH THAT!!!"
       APP="hpln"
       mkdir "/tmp/$APP"
         touch "/tmp/$APP/error.log"
@@ -42,15 +41,16 @@ let
   package = pkgs.stdenv.mkDerivation {
     pname = "hpln";
     version = "init";
-    src = pkgs.fetchFromGitHub {
-      owner = "burij";
-      repo = "hpln";
-      rev = "0.1.1";
-      sha256 = "sha256-yIIUXbKmdVXuyYOnQEFz7X7T7w28z8ZYYMJBSuHhCpE=";
-    };
+    src = ./.;
+    # src = pkgs.fetchFromGitHub {
+    #   owner = "burij";
+    #   repo = "hpln";
+    #   rev = "0.1.1";
+    #   sha256 = "sha256-yIIUXbKmdVXuyYOnQEFz7X7T7w28z8ZYYMJBSuHhCpE=";
+    # };
     llwCoreLua = pkgs.fetchurl {
       url = "https://raw.githubusercontent.com/burij/lua-light-wings/"
-        + "refs/tags/v.0.1.0/modules/llw-core.lua";
+        + "refs/tags/v.0.2.2/modules/lua-light-wings.lua";
       sha256 = "sha256-mRD1V0ERFi4gmE/VfAnd1ujoyoxlA0vCj9fJNSCtPkw=";
     };
 
@@ -66,6 +66,7 @@ let
       ln -s ${pkgs.openresty}/bin/openresty $out/bin/appserver
       ln -s $out/nginx.conf $out/bin/ngnix.conf
       cp -r $src/* $out/
+      # cp $llwCoreLua $out/lua-light-wings.lua
 
       # Create the lua binary wrapper with proper environment
       cat > $out/bin/hpln <<EOF
