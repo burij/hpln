@@ -41,13 +41,13 @@ let
   package = pkgs.stdenv.mkDerivation {
     pname = "hpln";
     version = "init";
-    src = ./.;
-    # src = pkgs.fetchFromGitHub {
-    #   owner = "burij";
-    #   repo = "hpln";
-    #   rev = "0.1.1";
-    #   sha256 = "sha256-yIIUXbKmdVXuyYOnQEFz7X7T7w28z8ZYYMJBSuHhCpE=";
-    # };
+    # src = ./.;
+    src = pkgs.fetchFromGitHub {
+      owner = "burij";
+      repo = "hpln";
+      rev = "0.2";
+      sha256 = "sha256-H+ns/5mkbKuSQQwQ6vaECTmveSBYBUMr6YRRKokFKck=";
+    };
     llwCoreLua = pkgs.fetchurl {
       url = "https://raw.githubusercontent.com/burij/lua-light-wings/"
         + "refs/tags/v.0.2.2/modules/lua-light-wings.lua";
