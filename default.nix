@@ -84,25 +84,25 @@ let
 
       APP="hpln"
       # Get the absolute path of the script itself
-      SCRIPT_PATH="$(realpath "$0")"
+      SCRIPT_PATH=$out
       # Get the bin directory containing the script
-      BIN_DIR="$(dirname "$SCRIPT_PATH")"
+      BIN_DIR=$out/bin
       # Get the app directory (parent of bin)
-      APP_DIR="$(dirname "$BIN_DIR")"
+      APP_DIR=$out/
 
-      PID_FILE="/tmp/$APP/nginx.pid"
-      ERROR_LOG="/tmp/$APP/error.log"
+      PID_FILE="/tmp/hpln/nginx.pid"
+      ERROR_LOG="/tmp/hpln/error.log"
 
       # Ensure required directories exist
-      mkdir -p "/tmp/$APP"
-      touch "$ERROR_LOG"
+      mkdir -p "/tmp/hpln"
+      touch /tmp/hpln/error.log
 
       # Change to the app directory so Lua can find its modules
       cd "$APP_DIR" || exit 1
 
       # Stop any existing server
-      if [ -f "$PID_FILE" ]; then
-      PID=$(cat "$PID_FILE" 2>/dev/null)
+      if [ -f "/tmp/hpln/nginx.pid" ]; then
+      PID=$(cat "/tmp/hpln/nginx.pid" 2>/dev/null)
       if [ -n "$PID" ]; then
       kill "$PID" 2>/dev/null && echo "Server (PID: $PID) stopped." \
       || echo "Server was not running."
@@ -130,4 +130,8 @@ let
     '';
   };
 in
-package
+{
+  package = package;
+  shell = shell;
+}
+
