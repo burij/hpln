@@ -27,6 +27,7 @@ let
       alias reload='kill && sleep 2 && up'
       alias deploy='cp default.nix \
           /data/$USER/System/hosts/box/webapps/hpln.nix'
+      alias make='rm result;git add .;build;git commit -m '
 
       cp ${pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/burij/"
@@ -115,4 +116,4 @@ let
   };
 in
 
-package
+{ shell = shell; package = package; }
