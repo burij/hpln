@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> { } }:
 
 let
-  nixpkgs = fetchTarball "https://github.com/NixOS/nixpkgs/tarball/nixos-24.11";
+  nixpkgs = fetchTarball "https://github.com/NixOS/nixpkgs/tarball/nixos-25.05";
   pkgs = import nixpkgs { config = { }; overlays = [ ]; };
 
   dependencies = with pkgs; [
@@ -18,15 +18,16 @@ let
       APP="hpln"
       mkdir "/tmp/$APP"
       touch "/tmp/$APP/error.log"
+
       alias up='echo "Starting server. Check out http://localhost:8111" && \
         nginx -p . -c nginx.conf -e /tmp/$APP/error.log'
       alias kill='kill "$(cat /tmp/$APP/nginx.pid 2>/dev/null)" \
         2>/dev/null && echo "Server stopped." || \
         echo "Server was not running."'
+
       alias debug='lua debug.lua'
       alias reload='kill && sleep 2 && up'
-      alias deploy='cp default.nix \
-          /data/$USER/System/hosts/box/webapps/hpln.nix'
+      alias deploy='cp default.nix /data/$USER/System/pkgs/hpln.nix'
       alias make='rm result;git add .;build;git commit -m '
 
       cp ${pkgs.fetchurl {
@@ -35,10 +36,9 @@ let
         sha256 = "sha256-w6ie/GiCiMywXgVmDg6WtUsTFa810DTGo1jAHV5pi/A=";
       }} ./need.lua
 
-
       cp ${pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/burij/"
-          +"lua-light-wings/refs/heads/main/modules/lua-light-wings.lua";
+          +"lua-light-wings/refs/tags/v.0.2.2/modules/lua-light-wings.lua";
         sha256 = "sha256-mRD1V0ERFi4gmE/VfAnd1ujoyoxlA0vCj9fJNSCtPkw=";
       }} ./modules/lua-light-wings.lua
 
